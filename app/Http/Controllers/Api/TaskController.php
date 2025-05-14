@@ -63,11 +63,20 @@ class TaskController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Task $task)
     {
-        //
+        $task->load('category', 'priority');
+        if (!$task) {
+            return response()->json([
+                "message" => "Task not found",
+                "success" => false
+            ]);
+        }
+        return response()->json([
+            "success" => true,
+            "data" => $task
+        ]);
     }
-
     /**
      * Show the form for editing the specified resource.
      */
@@ -79,9 +88,19 @@ class TaskController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Task $task)
     {
-        //
+
+
+        $data = $request->all();
+
+        $task->title = $data['title'];
+        $task->description = $data['description'];
+        $task->category_id = $data['category_id'];
+        $task->priority_id = $data['priority_id'];
+        $task->completed = $data['completed'];
+        $task->update();
+        return response()->json($task);
     }
 
     /**
@@ -89,6 +108,7 @@ class TaskController extends Controller
      */
     public function destroy(Task $task)
     {
-        $task->delite();
+        $task->delete();
+        return response()->json(['message' => 'Task eliminata']);
     }
 }
