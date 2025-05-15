@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Notes;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Laravel\Prompts\Note;
 
 class NoteController extends Controller
 {
@@ -12,7 +15,8 @@ class NoteController extends Controller
      */
     public function index()
     {
-        //
+        $notes = Notes::all();
+        return response()->json($notes);
     }
 
     /**
@@ -28,15 +32,22 @@ class NoteController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->all();
+        $newNote = new Notes();
+        $newNote->title = $data['title'];
+        $newNote->description = $data['description'];
+        $newNote->user_id = Auth::id();
+        $newNote->date = $data['date'];
+        $newNote->save();
+        return response()->json($newNote);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Notes $note)
     {
-        //
+        return response()->json($note);
     }
 
     /**
@@ -50,16 +61,25 @@ class NoteController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Notes $note)
     {
-        //
+        $data = $request->all();
+        $note->title = $data['title'];
+        $note->description = $data['description'];
+        $note->date = $data['date'];
+        $note->save();
+        return response()->json($note);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Notes $note)
     {
-        //
+        $note->delete();
+        return response()->json([
+            "message" => "Note deleted successfully",
+            "success" => true
+        ]);
     }
 }
