@@ -18,6 +18,8 @@ class TaskController extends Controller
     {
         $category = $request->input('category');
         $priority = $request->input('priority');
+        $completed = $request->input('completed');
+        $date = $request->input('date');
         //recupero l'utente autenticato
         $user = Auth::user();
         //alla variabile $query assegno la query per recuperare i task dell'utente
@@ -29,6 +31,12 @@ class TaskController extends Controller
         //se la variabile $priority non è vuota, aggiungo alla query il filtro per priorità
         if ($priority) {
             $query->where('priority_id', $priority);
+        }
+        if ($completed) {
+            $query->where('completed', $completed);
+        }
+        if ($date) {
+            $query->where('date', $date);
         }
 
         $tasks = $query->with('category', 'priority')->get();
